@@ -45,17 +45,82 @@ class FeatureSelection {
 
         // Backward Elimination
         pair<set<int>, float> backward_elimination() {
+            cout << fixed << setprecision(1);
+
+            // Start with every feature included
             set<int> CurrentFeatures;
             for (int i = 1; i <= NumberOfFeature; i++) {
                 CurrentFeatures.insert(i);
             }
 
-            float BestScore = RandomEvaluationStub(CurrentFeatures);
-            set<int> BestFeatures = CurrentFeatures;
+            // Evaluate full set
+            float BestOverallScore = RandomEvaluationStub(CurrentFeatures);
+            set<int> BestOverallSet = CurrentFeatures;
 
-            cout << "Using all features and random evaluation, I get an accuracy of " << BestScore << "%\n \nBeginning search.\n";
-            return {BestFeatures, BestScore};
-        }
+            cout << "Using all features and random evaluation, I get an accuracy of "
+                << BestOverallScore << "%\n";
+            cout << "Beginning search.\n\n";
+
+            // Continue until only one feature remains
+            while (CurrentFeatures.size() > 1) {
+                int FeatureToRemove = -1;
+                float BestScoreThisLevel = -1.0f;
+                set<int> BestSetThisLevel;
+
+                // Try removing each feature one by one
+                for (int f : CurrentFeatures) {
+                    set<int> Temp = CurrentFeatures;
+                    Temp.erase(f);
+
+                    float score = RandomEvaluationStub(Temp);
+
+                    // Print temp set with correct formatting
+                    cout << "Using feature(s) {";
+                    for (auto it = Temp.begin(); it != Temp.end(); ++it) {
+                        if (it != Temp.begin()) cout << ",";
+                        cout << *it;
+                    }
+                    cout << "} accuracy is " << score << "%\n";
+
+                    // Track best removal
+                    if (score > BestScoreThisLevel) {
+                        BestScoreThisLevel = score;
+                        FeatureToRemove = f;
+                        BestSetThisLevel = Temp;
+                    }
+                }
+
+                // Print the best set for this level
+                cout << "Feature set {";
+                for (auto it = BestSetThisLevel.begin(); it != BestSetThisLevel.end(); ++it) {
+                    if (it != BestSetThisLevel.begin()) cout << ",";
+                    cout << *it;
+                }
+                cout << "} was best, accuracy is " << BestScoreThisLevel << "%\n\n";
+
+                // Update the current set to the best one
+                CurrentFeatures = BestSetThisLevel;
+
+                // Check if accuracy decreased
+                if (BestScoreThisLevel < BestOverallScore) {
+                    cout << "(Warning, Accuracy has decreased!)\n";
+                } else {
+                    BestOverallScore = BestScoreThisLevel;
+                    BestOverallSet = CurrentFeatures;
+                }
+            }
+
+    // Print final result
+    cout << "Finished search!! The best feature subset is {";
+    for (auto it = BestOverallSet.begin(); it != BestOverallSet.end(); ++it) {
+        if (it != BestOverallSet.begin()) cout << ",";
+        cout << *it;
+    }
+    cout << "}, which has an accuracy of " << BestOverallScore << "%\n";
+
+    return {BestOverallSet, BestOverallScore};
+}
+
 
     private:
     
