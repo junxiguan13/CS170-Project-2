@@ -342,14 +342,14 @@ void greedy_backward_selection (const vector<int>& all_feat) {
 int main() {
     cout << "Welcome to the Feature Selection Algorithms.\n";
 
-    cout << "Please enter the filename to read inputs. You can use the default test files \'small-test-dataset.txt\' and \'large-test-dataset.txt\'." << endl;
+    cout << "Please enter the filename to read inputs. You can use the default test files \'small-test-dataset-2-2.txt\' and \'large-test-dataset-2.txt\'." << endl;
     string filename;
     getline(cin, filename);
 
     int NumberOfFeature;
     cout << "Please enter total number of features." << endl;
-    cout << "For default \'small-test-dataset.txt\', use features = 10." << endl;
-    cout << "For default \'large-test-dataset.txt\', use features = 40." << endl;
+    cout << "For default \'small-test-dataset-2-2.txt\', use features = 10." << endl;
+    cout << "For default \'large-test-dataset-2.txt\', use features = 40." << endl;
     cin >> NumberOfFeature;
     num_features = NumberOfFeature;
     /*
@@ -368,21 +368,23 @@ int main() {
     load_and_normalize(filename);
 
     //test small cases
-    cout << "Do you wish to check a qucik test? (\'small-test-dataset.txt\' with only features {3, 5, 7}, which should give an accuracy of 0.89). If yes, please enter .\'1.\'." << endl;
+    cout << "If using \'small-test-dataset-2-2.txt\', do you wish to check a qucik test? (Only with features {3, 5, 7}, which should give an accuracy of 0.89). If yes, please enter \'1\'. Otherwwise, please enter \'0\'." << endl;
     bool quicktest1;
     cin >> quicktest1;
     if (quicktest1) {
         vector<int> subset1 = {3, 5, 7};
         double accu1 = leave_one_out_accuracy(subset1);
         cout << "Using features {3, 5, 7}, the accuracy is " << accu1 << "%" << endl;
+        return 0;
     }
-    cout << "Do you wish to check a qucik test? (\'large-test-dataset.txt\' with only features {1, 15, 27}, which should give an accuracy of 0.949.) If yes, please enter .\'1.\'." << endl;
+    cout << "If using \'large-test-dataset-2.txt\', do you wish to check a qucik test? (Only with features {1, 15, 27}, which should give an accuracy of 0.949.) If yes, please enter \'1\'. Otherwwise, please enter \'0\'." << endl;
     bool quicktest2;
     cin >> quicktest2;
     if (quicktest2) {
-        vector<int> subset2 = {1, 5, 27};
+        vector<int> subset2 = {1, 15, 27};
         double accu2 = leave_one_out_accuracy(subset2);
-        cout << "Using features {1, 5, 27}, the accuracy is " << accu2 << "%" << endl;
+        cout << "Using features {1, 15, 27}, the accuracy is " << accu2 << "%" << endl;
+        return 0;
     }
 
     // Menu
