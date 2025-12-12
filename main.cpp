@@ -1,3 +1,26 @@
+/*
+CS170 Project 2 – Part III
+Group Members:
+Junxi Guan - jguan057
+Yat Chun Wong - ywong042
+William Hampshire - whamp003
+Lecture: 001
+
+Final Results:
+
+Small Dataset:
+Forward Selection: Best feature subset = {5, 3}, Accuracy = 92%
+Backward Elimination: Best feature subset = {2, 4, 5, 7, 10}, Accuracy = 82%
+
+Large Dataset:
+Forward Selection: Best feature subset = {27, 1}, Accuracy = 95.5%
+Backward Elimination: Best feature subset = {27}, Accuracy = 84.7%
+
+Titanic Dataset:
+Forward Selection: Best feature subset = {2}, Accuracy = 78%
+Backward Elimination: Best feature subset = {2}, Accuracy = 78%
+*/
+
 #include <iostream>
 #include <vector>
 #include <random>
@@ -15,24 +38,42 @@ struct Instance {
     vector<double> features;
 };
 vector<Instance> dataset;//store all data
-int num_features;//store the number of features
+int num_features = 0;//store the number of features
 
 //global functions
 void load_and_normalize(const string& filename) {
     //first reset the global variable and the old data
     dataset.clear();
+    ifstream fin(filename);
+    if (!fin) {
+        cout << "Error! Cannot open file " << filename << endl;
+        exit(1);
+    }
 
-    //if no features input
+    string line;
+    if (getline(fin, line)) {
+        if (!line.empty() && line.back() == '\r') line.pop_back(); // handle Windows CRLF
+        istringstream ss(line);
+        vector<double> values;
+        double val;
+        while (ss >> val) {
+            values.push_back(val);
+        }
+        cout << "Please enter the number of features (not including the class attribute): ";
+        cin >> num_features;
+    }
+    fin.clear();
+    fin.seekg(0, ios::beg);
+
+
     if (num_features <= 0) {
         cout << "Error! The number of features has not been set." << endl;
         exit(1);
     }
-    //if can not open file
-    ifstream fin(filename);
-    if (!fin) {
-        cout << "Error! Can not open file " << filename << endl;
-        exit(1);
-    }
+    
+    
+
+    
 
     //reading input from the file
     double label_val;//we assume only using 1 or 2 as label
@@ -55,6 +96,7 @@ void load_and_normalize(const string& filename) {
 
     //we need mean, std(standard deviation) to normalize the data
     int num_instances = dataset.size();//how many instances in the dataset
+    num_features = dataset[0].features.size();
     if (num_instances == 0) {
         cout << "Error! No input from the file " << filename << endl;
         exit(1);
@@ -347,44 +389,53 @@ int main() {
     getline(cin, filename);
 
     int NumberOfFeature;
-    cout << "Please enter total number of features." << endl;
+    load_and_normalize(filename);
+    cout << "\nThis dataset has " << num_features << " features (not including the class attribute), with " << dataset.size() << " instances." << endl;
+    
+    NumberOfFeature = num_features;
+    /*
+    cout << "Please enter number of features to use." << endl;
     cout << "For default \'small-test-dataset-2-2.txt\', use features = 10." << endl;
     cout << "For default \'large-test-dataset-2.txt\', use features = 40." << endl;
     cin >> NumberOfFeature;
-    num_features = NumberOfFeature;
+    */
     /*
     Small Dataset: small-test-dataset.txt (Has 100 instances and 10 features)
     Large Dataset: large-test-dataset.txt (Has 1000 instances, and 40 features)
     */
+    /*
     if (!cin || NumberOfFeature <= 0) {
         cerr << "Features should be greater than 0. Please reenter:\n";
         return 1;
     }
+    */
     vector<int> init_state;
     for (int i = 1; i <= NumberOfFeature; ++i) {
         init_state.push_back(i);
     }
     
-    load_and_normalize(filename);
-
     //test small cases
-    cout << "If using \'small-test-dataset-2-2.txt\', do you wish to check a qucik test? (Only with features {3, 5, 7}, which should give an accuracy of 0.89). If yes, please enter \'1\'. Otherwwise, please enter \'0\'." << endl;
-    bool quicktest1;
-    cin >> quicktest1;
-    if (quicktest1) {
-        vector<int> subset1 = {3, 5, 7};
-        double accu1 = leave_one_out_accuracy(subset1);
-        cout << "Using features {3, 5, 7}, the accuracy is " << accu1 << "%" << endl;
-        return 0;
-    }
-    cout << "If using \'large-test-dataset-2.txt\', do you wish to check a qucik test? (Only with features {1, 15, 27}, which should give an accuracy of 0.949.) If yes, please enter \'1\'. Otherwwise, please enter \'0\'." << endl;
-    bool quicktest2;
-    cin >> quicktest2;
-    if (quicktest2) {
-        vector<int> subset2 = {1, 15, 27};
-        double accu2 = leave_one_out_accuracy(subset2);
-        cout << "Using features {1, 15, 27}, the accuracy is " << accu2 << "%" << endl;
-        return 0;
+    
+    
+    if (filename == "large-test-dataset" || filename == "large-test-dataset"){
+        cout << "If using \'small-test-dataset.txt\', do you wish to check a quick test? (Only with features {3, 5, 7}, which should give an accuracy of 0.89). If yes, please enter \'1\'. Otherwwise, please enter \'0\'." << endl;
+        bool quicktest1;
+        cin >> quicktest1;
+        if (quicktest1) {
+            vector<int> subset1 = {3, 5, 7};
+            double accu1 = leave_one_out_accuracy(subset1);
+            cout << "Using features {3, 5, 7}, the accuracy is " << accu1 << "%" << endl;
+            return 0;
+        }
+        cout << "If using \'large-test-dataset.txt\', do you wish to check a quick test? (Only with features {1, 15, 27}, which should give an accuracy of 0.949.) If yes, please enter \'1\'. Otherwwise, please enter \'0\'." << endl;
+        bool quicktest2;
+        cin >> quicktest2;
+        if (quicktest2) {
+            vector<int> subset2 = {1, 15, 27};
+            double accu2 = leave_one_out_accuracy(subset2);
+            cout << "Using features {1, 15, 27}, the accuracy is " << accu2 << "%" << endl;
+            return 0;
+        }
     }
 
     // Menu
